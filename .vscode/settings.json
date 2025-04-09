@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "hardware.h": "c",
+        "gb.h": "c",
+        "stdint.h": "c",
+        "input.h": "c",
+        "test_tiles.h": "c",
+        "player.h": "c",
+        "hugedriver.h": "c",
+        "stddef.h": "c",
+        "cgb.h": "c"
+    }
+}
