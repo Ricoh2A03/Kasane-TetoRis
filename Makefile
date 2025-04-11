@@ -40,8 +40,8 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.c
 $(TARGET): $(OBJ)
 	@echo "Объектные файлы для линковки: $(OBJ)"
 	$(CC) $(OBJ) -o $(TARGET) -Wm-yC
+# 
 	@echo "Сборка завершена: $(TARGET)"
-
 
 # Очистка
 clean:

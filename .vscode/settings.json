@@ -8,6 +8,15 @@
         "player.h": "c",
         "hugedriver.h": "c",
         "stddef.h": "c",
-        "cgb.h": "c"
+        "cgb.h": "c",
+        "tileset_title.h": "c",
+        "title_scene.h": "c",
+        "map_title.h": "c",
+        "metasprites.h": "c",
+        "game_screen.h": "c",
+        "platform.h": "c",
+        "game_scene.h": "c",
+        "game_scene_tmp.h": "c",
+        "tetramino_graphic.h": "c"
     }
 }
