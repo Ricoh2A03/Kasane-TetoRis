@@ -1,0 +1,125 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler 
+                                      3 ; Version 4.4.1 #14650 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module timer
+                                      6 	.optsdcc -msm83
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _StartTimer
+                                     12 	.globl _UpdateTimer
+                                     13 	.globl _PauseTimer
+                                     14 	.globl _ResumeTimer
+                                     15 	.globl _GetTimerStatus
+                                     16 	.globl _GetRemainingTime
+                                     17 ;--------------------------------------------------------
+                                     18 ; special function registers
+                                     19 ;--------------------------------------------------------
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area _DATA
+                                     24 ;--------------------------------------------------------
+                                     25 ; ram data
+                                     26 ;--------------------------------------------------------
+                                     27 	.area _INITIALIZED
+                                     28 ;--------------------------------------------------------
+                                     29 ; absolute external ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _DABS (ABS)
+                                     32 ;--------------------------------------------------------
+                                     33 ; global & static initialisations
+                                     34 ;--------------------------------------------------------
+                                     35 	.area _HOME
+                                     36 	.area _GSINIT
+                                     37 	.area _GSFINAL
+                                     38 	.area _GSINIT
+                                     39 ;--------------------------------------------------------
+                                     40 ; Home
+                                     41 ;--------------------------------------------------------
+                                     42 	.area _HOME
+                                     43 	.area _HOME
+                                     44 ;--------------------------------------------------------
+                                     45 ; code
+                                     46 ;--------------------------------------------------------
+                                     47 	.area _CODE
+                                     48 ;src/my_libs/timer.c:6: void StartTimer(Timer *p, uint8_t wait_time){
+                                     49 ;	---------------------------------
+                                     50 ; Function StartTimer
+                                     51 ; ---------------------------------
+    00000000                         52 _StartTimer::
+                                     53 ;src/my_libs/timer.c:7: p->time = wait_time;
+    00000000 4B               [ 4]   54 	ld	c, e
+    00000001 42               [ 4]   55 	ld	b, d
+    00000002 03               [ 8]   56 	inc	bc
+    00000003 02               [ 8]   57 	ld	(bc), a
+                                     58 ;src/my_libs/timer.c:8: p->time_frac = 0;
+    00000004 13               [ 8]   59 	inc	de
+    00000005 13               [ 8]   60 	inc	de
+    00000006 AF               [ 4]   61 	xor	a, a
+    00000007 12               [ 8]   62 	ld	(de), a
+                                     63 ;src/my_libs/timer.c:9: }
+    00000008 C9               [16]   64 	ret
+                                     65 ;src/my_libs/timer.c:11: void UpdateTimer(Timer *p){
+                                     66 ;	---------------------------------
+                                     67 ; Function UpdateTimer
+                                     68 ; ---------------------------------
+    00000009                         69 _UpdateTimer::
+                                     70 ;src/my_libs/timer.c:12: if (p->active != 0){
+    00000009 1A               [ 8]   71 	ld	a, (de)
+    0000000A B7               [ 4]   72 	or	a, a
+    0000000B C8               [20]   73 	ret	Z
+                                     74 ;src/my_libs/timer.c:13: p->time_frac -= 1;
+    0000000C 4B               [ 4]   75 	ld	c, e
+    0000000D 42               [ 4]   76 	ld	b, d
+    0000000E 03               [ 8]   77 	inc	bc
+    0000000F 03               [ 8]   78 	inc	bc
+    00000010 0A               [ 8]   79 	ld	a, (bc)
+    00000011 3D               [ 4]   80 	dec	a
+                                     81 ;src/my_libs/timer.c:14: if (p->time_frac == 0){
+    00000012 02               [ 8]   82 	ld	(bc), a
+    00000013 B7               [ 4]   83 	or	a, a
+    00000014 C0               [20]   84 	ret	NZ
+                                     85 ;src/my_libs/timer.c:15: p->time -= 1;
+    00000015 13               [ 8]   86 	inc	de
+    00000016 1A               [ 8]   87 	ld	a, (de)
+    00000017 3D               [ 4]   88 	dec	a
+    00000018 12               [ 8]   89 	ld	(de), a
+                                     90 ;src/my_libs/timer.c:18: }
+    00000019 C9               [16]   91 	ret
+                                     92 ;src/my_libs/timer.c:20: void PauseTimer(Timer *p){p->active = 0;}
+                                     93 ;	---------------------------------
+                                     94 ; Function PauseTimer
+                                     95 ; ---------------------------------
+    0000001A                         96 _PauseTimer::
+    0000001A AF               [ 4]   97 	xor	a, a
+    0000001B 12               [ 8]   98 	ld	(de), a
+    0000001C C9               [16]   99 	ret
+                                    100 ;src/my_libs/timer.c:22: void ResumeTimer(Timer *p){p->active = 1;}
+                                    101 ;	---------------------------------
+                                    102 ; Function ResumeTimer
+                                    103 ; ---------------------------------
+    0000001D                        104 _ResumeTimer::
+    0000001D 3E 01            [ 8]  105 	ld	a, #0x01
+    0000001F 12               [ 8]  106 	ld	(de), a
+    00000020 C9               [16]  107 	ret
+                                    108 ;src/my_libs/timer.c:24: uint8_t GetTimerStatus(Timer *p){return p->active;}
+                                    109 ;	---------------------------------
+                                    110 ; Function GetTimerStatus
+                                    111 ; ---------------------------------
+    00000021                        112 _GetTimerStatus::
+    00000021 1A               [ 8]  113 	ld	a, (de)
+    00000022 C9               [16]  114 	ret
+                                    115 ;src/my_libs/timer.c:26: uint8_t GetRemainingTime(Timer *p){return p->time;}
+                                    116 ;	---------------------------------
+                                    117 ; Function GetRemainingTime
+                                    118 ; ---------------------------------
+    00000023                        119 _GetRemainingTime::
+    00000023 13               [ 8]  120 	inc	de
+    00000024 1A               [ 8]  121 	ld	a, (de)
+    00000025 C9               [16]  122 	ret
+                                    123 	.area _CODE
+                                    124 	.area _INITIALIZER
+                                    125 	.area _CABS (ABS)

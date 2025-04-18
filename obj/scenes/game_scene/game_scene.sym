@@ -1,0 +1,54 @@
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy)                  Page 1
+Hexadecimal [32-Bits]
+
+Symbol Table
+
+    .__.$$$.                                                    =   00002710 L
+    .__.ABS.                                                    =   00000000 G
+    .__.CPU.                                                    =   00000000 L
+    .__.H$L.                                                    =   00000000 L
+  0 _DrawPiece                                                      0000018A GR
+  0 _DrawUI                                                         00000125 GR
+  0 _InitGameScene                                                  00000000 GR
+    _InputJustPressed                                               ******** GX
+    _InputPressed                                                   ******** GX
+    _SCX_REG                                                        ******** GX
+    _SCY_REG                                                        ******** GX
+  0 _UpdateGameScene                                                000000A1 GR
+    _VBK_REG                                                        ******** GX
+    _calculateIndex                                                 ******** GX
+  1 _collision_map                                                  00000002 GR
+    _game_scene_map                                                 ******** GX
+    _game_scene_map_attributes                                      ******** GX
+    _game_scene_palettes                                            ******** GX
+    _game_scene_tiles                                               ******** GX
+    _initrand                                                       ******** GX
+    _rand                                                           ******** GX
+    _set_bkg_data                                                   ******** GX
+    _set_bkg_palette                                                ******** GX
+    _set_bkg_tile_xy                                                ******** GX
+    _set_bkg_tiles                                                  ******** GX
+    _set_sprite_data                                                ******** GX
+    _set_sprite_palette                                             ******** GX
+    _shadow_OAM                                                     ******** GX
+    _tetramino_graphic_palettes                                     ******** GX
+    _tetramino_graphic_tiles                                        ******** GX
+  1 _timer                                                          00000000 GR
+  1 _timer_frac                                                     00000001 GR
+
+
+ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy)                  Page 2
+Hexadecimal [32-Bits]
+
+Area Table
+
+   0 _CODE                                      size      23B   flags    0
+   1 _DATA                                      size       B6   flags    0
+   2 _INITIALIZED                               size        0   flags    0
+   3 _DABS                                      size        0   flags    8
+   4 _HOME                                      size        0   flags    0
+   5 _GSINIT                                    size        0   flags    0
+   6 _GSFINAL                                   size        0   flags    0
+   7 _INITIALIZER                               size        0   flags    0
+   8 _CABS                                      size        0   flags    8
+

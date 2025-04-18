@@ -1,0 +1,101 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler 
+                                      3 ; Version 4.4.1 #14650 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module input
+                                      6 	.optsdcc -msm83
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _joypad
+                                     12 	.globl _pad_curr
+                                     13 	.globl _pad_prev
+                                     14 	.globl _InputPressed
+                                     15 	.globl _InputJustPressed
+                                     16 	.globl _InputRead
+                                     17 ;--------------------------------------------------------
+                                     18 ; special function registers
+                                     19 ;--------------------------------------------------------
+                                     20 ;--------------------------------------------------------
+                                     21 ; ram data
+                                     22 ;--------------------------------------------------------
+                                     23 	.area _DATA
+    00000000                         24 _pad_prev::
+    00000000                         25 	.ds 1
+    00000001                         26 _pad_curr::
+    00000001                         27 	.ds 1
+                                     28 ;--------------------------------------------------------
+                                     29 ; ram data
+                                     30 ;--------------------------------------------------------
+                                     31 	.area _INITIALIZED
+                                     32 ;--------------------------------------------------------
+                                     33 ; absolute external ram data
+                                     34 ;--------------------------------------------------------
+                                     35 	.area _DABS (ABS)
+                                     36 ;--------------------------------------------------------
+                                     37 ; global & static initialisations
+                                     38 ;--------------------------------------------------------
+                                     39 	.area _HOME
+                                     40 	.area _GSINIT
+                                     41 	.area _GSFINAL
+                                     42 	.area _GSINIT
+                                     43 ;--------------------------------------------------------
+                                     44 ; Home
+                                     45 ;--------------------------------------------------------
+                                     46 	.area _HOME
+                                     47 	.area _HOME
+                                     48 ;--------------------------------------------------------
+                                     49 ; code
+                                     50 ;--------------------------------------------------------
+                                     51 	.area _CODE
+                                     52 ;src/my_libs/input.c:8: BOOLEAN InputPressed(uint8_t button) {
+                                     53 ;	---------------------------------
+                                     54 ; Function InputPressed
+                                     55 ; ---------------------------------
+    00000000                         56 _InputPressed::
+                                     57 ;src/my_libs/input.c:9: return ((pad_curr & button) != 0);
+    00000000 21r01r00         [12]   58 	ld	hl, #_pad_curr
+    00000003 A6               [ 8]   59 	and	a, (hl)
+    00000004 D6 01            [ 8]   60 	sub	a, #0x01
+    00000006 3E 00            [ 8]   61 	ld	a, #0x00
+    00000008 17               [ 4]   62 	rla
+    00000009 EE 01            [ 8]   63 	xor	a, #0x01
+                                     64 ;src/my_libs/input.c:10: }
+    0000000B C9               [16]   65 	ret
+                                     66 ;src/my_libs/input.c:12: BOOLEAN InputJustPressed(uint8_t button) {
+                                     67 ;	---------------------------------
+                                     68 ; Function InputJustPressed
+                                     69 ; ---------------------------------
+    0000000C                         70 _InputJustPressed::
+    0000000C 4F               [ 4]   71 	ld	c, a
+                                     72 ;src/my_libs/input.c:13: return (((pad_curr & button) != 0) && ((pad_prev & button) == 0));
+    0000000D FAr01r00         [16]   73 	ld	a, (#_pad_curr)
+    00000010 A1               [ 4]   74 	and	a,c
+    00000011 28 06            [12]   75 	jr	Z, 00103$
+    00000013 FAr00r00         [16]   76 	ld	a, (#_pad_prev)
+    00000016 A1               [ 4]   77 	and	a,c
+    00000017 28 02            [12]   78 	jr	Z, 00104$
+    00000019                         79 00103$:
+    00000019 AF               [ 4]   80 	xor	a, a
+    0000001A C9               [16]   81 	ret
+    0000001B                         82 00104$:
+    0000001B 3E 01            [ 8]   83 	ld	a, #0x01
+                                     84 ;src/my_libs/input.c:14: }
+    0000001D C9               [16]   85 	ret
+                                     86 ;src/my_libs/input.c:16: void InputRead(void){
+                                     87 ;	---------------------------------
+                                     88 ; Function InputRead
+                                     89 ; ---------------------------------
+    0000001E                         90 _InputRead::
+                                     91 ;src/my_libs/input.c:17: pad_prev = pad_curr;
+    0000001E FAr01r00         [16]   92 	ld	a, (#_pad_curr)
+    00000021 EAr00r00         [16]   93 	ld	(#_pad_prev),a
+                                     94 ;src/my_libs/input.c:18: pad_curr = joypad();
+    00000024 CDr00r00         [24]   95 	call	_joypad
+    00000027 EAr01r00         [16]   96 	ld	(#_pad_curr),a
+                                     97 ;src/my_libs/input.c:19: }
+    0000002A C9               [16]   98 	ret
+                                     99 	.area _CODE
+                                    100 	.area _INITIALIZER
+                                    101 	.area _CABS (ABS)

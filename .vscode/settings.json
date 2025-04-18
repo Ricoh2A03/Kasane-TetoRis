@@ -17,6 +17,8 @@
         "platform.h": "c",
         "game_scene.h": "c",
         "game_scene_tmp.h": "c",
-        "tetramino_graphic.h": "c"
+        "tetramino_graphic.h": "c",
+        "timer.h": "c",
+        "rand.h": "c"
     }
 }

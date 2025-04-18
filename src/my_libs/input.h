@@ -1,7 +1,7 @@
 #ifndef GB_INPUTLIB_H
 #define GB_INPUTLIB_H
 
-#include <gb\gb.h>
+#include <gb/gb.h>
 #include <stdint.h>
 
 BOOLEAN InputPressed(uint8_t button);

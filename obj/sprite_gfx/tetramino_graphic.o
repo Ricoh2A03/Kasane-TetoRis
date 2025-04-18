@@ -1,0 +1,26 @@
+XL4
+H 9 areas 3 global symbols
+M tetramino_graphic
+O -msm83
+S .__.ABS. Def00000000
+A _CODE size 18 flags 0 addr 0
+S _tetramino_graphic_tiles Def00000008
+S _tetramino_graphic_palettes Def00000000
+A _DATA size 0 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00 00
+R 00 00 00 00
+T 00 00 00 00 FF 7F 3F 39 00 00 00 00
+R 00 00 00 00
+T 08 00 00 00
+R 00 00 00 00
+T 08 00 00 00 FF 00 81 00 BD 00 A5 00 A5 00 BD 00
+R 00 00 00 00
+T 14 00 00 00 81 00 FF 00
+R 00 00 00 00

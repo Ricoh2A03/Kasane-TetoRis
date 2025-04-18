@@ -1,0 +1,552 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler 
+                                      3 ; Version 4.4.1 #14650 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module game_scene
+                                      6 	.optsdcc -msm83
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _calculateIndex
+                                     12 	.globl _InputJustPressed
+                                     13 	.globl _InputPressed
+                                     14 	.globl _set_sprite_palette
+                                     15 	.globl _set_bkg_palette
+                                     16 	.globl _rand
+                                     17 	.globl _initrand
+                                     18 	.globl _set_sprite_data
+                                     19 	.globl _set_bkg_tile_xy
+                                     20 	.globl _set_bkg_tiles
+                                     21 	.globl _set_bkg_data
+                                     22 	.globl _collision_map
+                                     23 	.globl _timer_frac
+                                     24 	.globl _timer
+                                     25 	.globl _InitGameScene
+                                     26 	.globl _UpdateGameScene
+                                     27 	.globl _DrawUI
+                                     28 	.globl _DrawPiece
+                                     29 ;--------------------------------------------------------
+                                     30 ; special function registers
+                                     31 ;--------------------------------------------------------
+                                     32 ;--------------------------------------------------------
+                                     33 ; ram data
+                                     34 ;--------------------------------------------------------
+                                     35 	.area _DATA
+    00000000                         36 _timer::
+    00000000                         37 	.ds 1
+    00000001                         38 _timer_frac::
+    00000001                         39 	.ds 1
+    00000002                         40 _collision_map::
+    00000002                         41 	.ds 180
+                                     42 ;--------------------------------------------------------
+                                     43 ; ram data
+                                     44 ;--------------------------------------------------------
+                                     45 	.area _INITIALIZED
+                                     46 ;--------------------------------------------------------
+                                     47 ; absolute external ram data
+                                     48 ;--------------------------------------------------------
+                                     49 	.area _DABS (ABS)
+                                     50 ;--------------------------------------------------------
+                                     51 ; global & static initialisations
+                                     52 ;--------------------------------------------------------
+                                     53 	.area _HOME
+                                     54 	.area _GSINIT
+                                     55 	.area _GSFINAL
+                                     56 	.area _GSINIT
+                                     57 ;--------------------------------------------------------
+                                     58 ; Home
+                                     59 ;--------------------------------------------------------
+                                     60 	.area _HOME
+                                     61 	.area _HOME
+                                     62 ;--------------------------------------------------------
+                                     63 ; code
+                                     64 ;--------------------------------------------------------
+                                     65 	.area _CODE
+                                     66 ;src/scenes/game_scene/game_scene.c:35: void InitGameScene(GameScene *p){
+                                     67 ;	---------------------------------
+                                     68 ; Function InitGameScene
+                                     69 ; ---------------------------------
+    00000000                         70 _InitGameScene::
+                                     71 ;src/scenes/game_scene/game_scene.c:36: initrand(8);  // randomize seed (TODO: make so the seed will be calculated based on the global frame counter and user input)
+    00000000 D5               [16]   72 	push	de
+    00000001 01 08 00         [12]   73 	ld	bc, #0x0008
+    00000004 C5               [16]   74 	push	bc
+    00000005 CDr00r00         [24]   75 	call	_initrand
+    00000008 E1               [12]   76 	pop	hl
+    00000009 D1               [12]   77 	pop	de
+                                     78 ;src/scenes/game_scene/game_scene.c:38: SCX_REG = 0;  // reset scroll window
+    0000000A AF               [ 4]   79 	xor	a, a
+    0000000B E0r00            [12]   80 	ldh	(_SCX_REG + 0), a
+                                     81 ;src/scenes/game_scene/game_scene.c:39: SCY_REG = 0;
+    0000000D AF               [ 4]   82 	xor	a, a
+    0000000E E0r00            [12]   83 	ldh	(_SCY_REG + 0), a
+                                     84 ;src/scenes/game_scene/game_scene.c:41: p->score = 0; // set initial score values
+    00000010 6B               [ 4]   85 	ld	l, e
+    00000011 62               [ 4]   86 	ld	h, d
+    00000012 AF               [ 4]   87 	xor	a, a
+    00000013 22               [ 8]   88 	ld	(hl+), a
+    00000014 77               [ 8]   89 	ld	(hl), a
+                                     90 ;src/scenes/game_scene/game_scene.c:42: p->level = 0;
+    00000015 6B               [ 4]   91 	ld	l, e
+                                     92 ;	spillPairReg hl
+                                     93 ;	spillPairReg hl
+    00000016 62               [ 4]   94 	ld	h, d
+                                     95 ;	spillPairReg hl
+                                     96 ;	spillPairReg hl
+    00000017 23               [ 8]   97 	inc	hl
+    00000018 23               [ 8]   98 	inc	hl
+    00000019 36 00            [12]   99 	ld	(hl), #0x00
+                                    100 ;src/scenes/game_scene/game_scene.c:43: p->lines = 0;
+    0000001B 4B               [ 4]  101 	ld	c, e
+    0000001C 42               [ 4]  102 	ld	b, d
+    0000001D 03               [ 8]  103 	inc	bc
+    0000001E 03               [ 8]  104 	inc	bc
+    0000001F 03               [ 8]  105 	inc	bc
+    00000020 AF               [ 4]  106 	xor	a, a
+    00000021 02               [ 8]  107 	ld	(bc), a
+    00000022 03               [ 8]  108 	inc	bc
+    00000023 02               [ 8]  109 	ld	(bc), a
+                                    110 ;src/scenes/game_scene/game_scene.c:45: p->next_piece = rand();
+    00000024 21 06 00         [12]  111 	ld	hl, #0x0006
+    00000027 19               [ 8]  112 	add	hl, de
+    00000028 E5               [16]  113 	push	hl
+    00000029 D5               [16]  114 	push	de
+    0000002A CDr00r00         [24]  115 	call	_rand
+    0000002D 7B               [ 4]  116 	ld	a, e
+    0000002E D1               [12]  117 	pop	de
+    0000002F E1               [12]  118 	pop	hl
+    00000030 77               [ 8]  119 	ld	(hl), a
+                                    120 ;src/scenes/game_scene/game_scene.c:47: timer = FALL_TIMER;
+    00000031 21r00r00         [12]  121 	ld	hl, #_timer
+    00000034 36 10            [12]  122 	ld	(hl), #0x10
+                                    123 ;src/scenes/game_scene/game_scene.c:48: timer_frac = FALL_TIMER_FRAC;
+    00000036 21r01r00         [12]  124 	ld	hl, #_timer_frac
+    00000039 36 04            [12]  125 	ld	(hl), #0x04
+                                    126 ;src/scenes/game_scene/game_scene.c:50: p->piece_Xposition = 32; // default piece position
+    0000003B 21 07 00         [12]  127 	ld	hl, #0x0007
+    0000003E 19               [ 8]  128 	add	hl, de
+    0000003F 36 20            [12]  129 	ld	(hl), #0x20
+                                    130 ;src/scenes/game_scene/game_scene.c:51: p->piece_Yposition = 0;
+    00000041 21 08 00         [12]  131 	ld	hl, #0x0008
+    00000044 19               [ 8]  132 	add	hl, de
+    00000045 36 00            [12]  133 	ld	(hl), #0x00
+                                    134 ;src/scenes/game_scene/game_scene.c:53: set_bkg_palette(0, game_scene_PALETTE_COUNT, game_scene_palettes); // load palette
+    00000047 11r00r00         [12]  135 	ld	de, #_game_scene_palettes
+    0000004A D5               [16]  136 	push	de
+    0000004B 21 00 08         [12]  137 	ld	hl, #0x800
+    0000004E E5               [16]  138 	push	hl
+    0000004F CDr00r00         [24]  139 	call	_set_bkg_palette
+    00000052 E8 04            [16]  140 	add	sp, #4
+                                    141 ;src/scenes/game_scene/game_scene.c:54: set_bkg_data(0, game_scene_TILE_COUNT, game_scene_tiles);          // load bg tiles
+    00000054 11r00r00         [12]  142 	ld	de, #_game_scene_tiles
+    00000057 D5               [16]  143 	push	de
+    00000058 21 00 55         [12]  144 	ld	hl, #0x5500
+    0000005B E5               [16]  145 	push	hl
+    0000005C CDr00r00         [24]  146 	call	_set_bkg_data
+    0000005F E8 04            [16]  147 	add	sp, #4
+                                    148 ;src/scenes/game_scene/game_scene.c:55: set_bkg_tiles(0, 0, 20, 18, game_scene_map);                       // load tilemap
+    00000061 11r00r00         [12]  149 	ld	de, #_game_scene_map
+    00000064 D5               [16]  150 	push	de
+    00000065 21 14 12         [12]  151 	ld	hl, #0x1214
+    00000068 E5               [16]  152 	push	hl
+    00000069 AF               [ 4]  153 	xor	a, a
+    0000006A 0F               [ 4]  154 	rrca
+    0000006B F5               [16]  155 	push	af
+    0000006C CDr00r00         [24]  156 	call	_set_bkg_tiles
+    0000006F E8 06            [16]  157 	add	sp, #6
+                                    158 ;src/scenes/game_scene/game_scene.c:56: set_bkg_attributes(0, 0, 20, 18, game_scene_map_attributes);       // set tilemap color attributes
+                                    159 ;c:\gbdk\include\gb\gb.h:1226: VBK_REG = VBK_ATTRIBUTES;
+    00000071 3E 01            [ 8]  160 	ld	a, #0x01
+    00000073 E0r00            [12]  161 	ldh	(_VBK_REG + 0), a
+                                    162 ;c:\gbdk\include\gb\gb.h:1227: set_bkg_tiles(x, y, w, h, tiles);
+    00000075 11r00r00         [12]  163 	ld	de, #_game_scene_map_attributes
+    00000078 D5               [16]  164 	push	de
+    00000079 21 14 12         [12]  165 	ld	hl, #0x1214
+    0000007C E5               [16]  166 	push	hl
+    0000007D AF               [ 4]  167 	xor	a, a
+    0000007E 0F               [ 4]  168 	rrca
+    0000007F F5               [16]  169 	push	af
+    00000080 CDr00r00         [24]  170 	call	_set_bkg_tiles
+    00000083 E8 06            [16]  171 	add	sp, #6
+                                    172 ;c:\gbdk\include\gb\gb.h:1228: VBK_REG = VBK_TILES;
+    00000085 AF               [ 4]  173 	xor	a, a
+    00000086 E0r00            [12]  174 	ldh	(_VBK_REG + 0), a
+                                    175 ;src/scenes/game_scene/game_scene.c:58: set_sprite_data(0, tetramino_graphic_TILE_COUNT, tetramino_graphic_tiles);          // load tetromino tile into VRAM
+    00000088 11r00r00         [12]  176 	ld	de, #_tetramino_graphic_tiles
+    0000008B D5               [16]  177 	push	de
+    0000008C AF               [ 4]  178 	xor	a, a
+    0000008D 3C               [ 4]  179 	inc	a
+    0000008E F5               [16]  180 	push	af
+    0000008F CDr00r00         [24]  181 	call	_set_sprite_data
+    00000092 E8 04            [16]  182 	add	sp, #4
+                                    183 ;src/scenes/game_scene/game_scene.c:59: set_sprite_palette(0, tetramino_graphic_PALETTE_COUNT, tetramino_graphic_palettes); // load sprite palette
+    00000094 11r00r00         [12]  184 	ld	de, #_tetramino_graphic_palettes
+    00000097 D5               [16]  185 	push	de
+    00000098 AF               [ 4]  186 	xor	a, a
+    00000099 3C               [ 4]  187 	inc	a
+    0000009A F5               [16]  188 	push	af
+    0000009B CDr00r00         [24]  189 	call	_set_sprite_palette
+    0000009E E8 04            [16]  190 	add	sp, #4
+                                    191 ;src/scenes/game_scene/game_scene.c:60: }
+    000000A0 C9               [16]  192 	ret
+                                    193 ;src/scenes/game_scene/game_scene.c:62: void UpdateGameScene(GameScene *p){
+                                    194 ;	---------------------------------
+                                    195 ; Function UpdateGameScene
+                                    196 ; ---------------------------------
+    000000A1                        197 _UpdateGameScene::
+                                    198 ;src/scenes/game_scene/game_scene.c:63: if ( InputJustPressed(J_RIGHT) && (p->piece_Xposition < RIGHT_BORDER - 24) ){
+    000000A1 D5               [16]  199 	push	de
+    000000A2 3E 01            [ 8]  200 	ld	a, #0x01
+    000000A4 CDr00r00         [24]  201 	call	_InputJustPressed
+    000000A7 4F               [ 4]  202 	ld	c, a
+    000000A8 D1               [12]  203 	pop	de
+    000000A9 21 07 00         [12]  204 	ld	hl, #0x0007
+    000000AC 19               [ 8]  205 	add	hl, de
+    000000AD 79               [ 4]  206 	ld	a, c
+    000000AE B7               [ 4]  207 	or	a, a
+    000000AF 28 08            [12]  208 	jr	Z, 00102$
+    000000B1 7E               [ 8]  209 	ld	a, (hl)
+    000000B2 FE 40            [ 8]  210 	cp	a, #0x40
+    000000B4 30 03            [12]  211 	jr	NC, 00102$
+                                    212 ;src/scenes/game_scene/game_scene.c:64: p->piece_Xposition += 8;}
+    000000B6 C6 08            [ 8]  213 	add	a, #0x08
+    000000B8 77               [ 8]  214 	ld	(hl), a
+    000000B9                        215 00102$:
+                                    216 ;src/scenes/game_scene/game_scene.c:65: if ( InputJustPressed(J_LEFT) && (p->piece_Xposition > LEFT_BORDER) ){
+    000000B9 E5               [16]  217 	push	hl
+    000000BA D5               [16]  218 	push	de
+    000000BB 3E 02            [ 8]  219 	ld	a, #0x02
+    000000BD CDr00r00         [24]  220 	call	_InputJustPressed
+    000000C0 D1               [12]  221 	pop	de
+    000000C1 E1               [12]  222 	pop	hl
+    000000C2 B7               [ 4]  223 	or	a, a
+    000000C3 28 0A            [12]  224 	jr	Z, 00105$
+    000000C5 4E               [ 8]  225 	ld	c, (hl)
+    000000C6 3E 08            [ 8]  226 	ld	a, #0x08
+    000000C8 91               [ 4]  227 	sub	a, c
+    000000C9 30 04            [12]  228 	jr	NC, 00105$
+                                    229 ;src/scenes/game_scene/game_scene.c:66: p->piece_Xposition -= 8;}
+    000000CB 79               [ 4]  230 	ld	a, c
+    000000CC C6 F8            [ 8]  231 	add	a, #0xf8
+    000000CE 77               [ 8]  232 	ld	(hl), a
+    000000CF                        233 00105$:
+                                    234 ;src/scenes/game_scene/game_scene.c:68: if ( InputJustPressed(J_UP) ){
+    000000CF D5               [16]  235 	push	de
+    000000D0 3E 04            [ 8]  236 	ld	a, #0x04
+    000000D2 CDr00r00         [24]  237 	call	_InputJustPressed
+    000000D5 4F               [ 4]  238 	ld	c, a
+    000000D6 D1               [12]  239 	pop	de
+                                    240 ;src/scenes/game_scene/game_scene.c:69: p->piece_Yposition = 0;
+    000000D7 21 08 00         [12]  241 	ld	hl, #0x0008
+    000000DA 19               [ 8]  242 	add	hl, de
+    000000DB 5D               [ 4]  243 	ld	e, l
+    000000DC 54               [ 4]  244 	ld	d, h
+                                    245 ;src/scenes/game_scene/game_scene.c:68: if ( InputJustPressed(J_UP) ){
+    000000DD 79               [ 4]  246 	ld	a, c
+    000000DE B7               [ 4]  247 	or	a, a
+    000000DF 28 17            [12]  248 	jr	Z, 00108$
+                                    249 ;src/scenes/game_scene/game_scene.c:69: p->piece_Yposition = 0;
+    000000E1 AF               [ 4]  250 	xor	a, a
+    000000E2 12               [ 8]  251 	ld	(de), a
+                                    252 ;src/scenes/game_scene/game_scene.c:70: collision_map[calculateIndex(0, 0, GAME_FIELD_LENGTH)] = 1;
+    000000E3 D5               [16]  253 	push	de
+    000000E4 3E B4            [ 8]  254 	ld	a, #0xb4
+    000000E6 F5               [16]  255 	push	af
+    000000E7 33               [ 8]  256 	inc	sp
+    000000E8 AF               [ 4]  257 	xor	a, a
+    000000E9 5F               [ 4]  258 	ld	e, a
+    000000EA CDr00r00         [24]  259 	call	_calculateIndex
+    000000ED D1               [12]  260 	pop	de
+    000000EE C6r02            [ 8]  261 	add	a, #<(_collision_map)
+    000000F0 6F               [ 4]  262 	ld	l, a
+                                    263 ;	spillPairReg hl
+                                    264 ;	spillPairReg hl
+    000000F1 3E 00            [ 8]  265 	ld	a, #0x00
+    000000F3 CEs00            [ 8]  266 	adc	a, #>(_collision_map)
+    000000F5 67               [ 4]  267 	ld	h, a
+                                    268 ;	spillPairReg hl
+                                    269 ;	spillPairReg hl
+    000000F6 36 01            [12]  270 	ld	(hl), #0x01
+    000000F8                        271 00108$:
+                                    272 ;src/scenes/game_scene/game_scene.c:74: timer_frac -= 1;
+    000000F8 21r01r00         [12]  273 	ld	hl, #_timer_frac
+                                    274 ;src/scenes/game_scene/game_scene.c:75: if (timer_frac == 0) {
+    000000FB 35               [12]  275 	dec	(hl)
+    000000FC 20 09            [12]  276 	jr	NZ, 00110$
+                                    277 ;src/scenes/game_scene/game_scene.c:76: timer -= 1;
+    000000FE 21r00r00         [12]  278 	ld	hl, #_timer
+    00000101 35               [12]  279 	dec	(hl)
+                                    280 ;src/scenes/game_scene/game_scene.c:78: timer_frac = FALL_TIMER_FRAC;
+    00000102 21r01r00         [12]  281 	ld	hl, #_timer_frac
+    00000105 36 04            [12]  282 	ld	(hl), #0x04
+    00000107                        283 00110$:
+                                    284 ;src/scenes/game_scene/game_scene.c:82: if (timer == 0) {
+    00000107 FAr00r00         [16]  285 	ld	a, (#_timer)
+    0000010A B7               [ 4]  286 	or	a, a
+    0000010B C0               [20]  287 	ret	NZ
+                                    288 ;src/scenes/game_scene/game_scene.c:83: if (p->piece_Yposition < SCREEN_HEIGHT - 16){
+    0000010C 1A               [ 8]  289 	ld	a, (de)
+    0000010D D6 80            [ 8]  290 	sub	a, #0x80
+    0000010F 30 0E            [12]  291 	jr	NC, 00114$
+                                    292 ;src/scenes/game_scene/game_scene.c:84: if (!InputPressed(J_DOWN)){
+    00000111 D5               [16]  293 	push	de
+    00000112 3E 08            [ 8]  294 	ld	a, #0x08
+    00000114 CDr00r00         [24]  295 	call	_InputPressed
+    00000117 D1               [12]  296 	pop	de
+    00000118 B7               [ 4]  297 	or	a, a
+    00000119 20 04            [12]  298 	jr	NZ, 00114$
+                                    299 ;src/scenes/game_scene/game_scene.c:85: p->piece_Yposition += 8;
+    0000011B 1A               [ 8]  300 	ld	a, (de)
+    0000011C C6 08            [ 8]  301 	add	a, #0x08
+    0000011E 12               [ 8]  302 	ld	(de), a
+    0000011F                        303 00114$:
+                                    304 ;src/scenes/game_scene/game_scene.c:91: timer = FALL_TIMER; // сброс основного таймера
+    0000011F 21r00r00         [12]  305 	ld	hl, #_timer
+    00000122 36 10            [12]  306 	ld	(hl), #0x10
+                                    307 ;src/scenes/game_scene/game_scene.c:94: }
+    00000124 C9               [16]  308 	ret
+                                    309 ;src/scenes/game_scene/game_scene.c:96: void DrawUI(GameScene *p){
+                                    310 ;	---------------------------------
+                                    311 ; Function DrawUI
+                                    312 ; ---------------------------------
+    00000125                        313 _DrawUI::
+    00000125 3B               [ 8]  314 	dec	sp
+    00000126 3B               [ 8]  315 	dec	sp
+                                    316 ;src/scenes/game_scene/game_scene.c:97: if (p->score < 10){
+    00000127 4B               [ 4]  317 	ld	c,e
+    00000128 42               [ 4]  318 	ld	b,d
+    00000129 1A               [ 8]  319 	ld	a, (de)
+    0000012A F8 00            [12]  320 	ldhl	sp,	#0
+    0000012C 22               [ 8]  321 	ld	(hl+), a
+    0000012D 13               [ 8]  322 	inc	de
+    0000012E 1A               [ 8]  323 	ld	a, (de)
+    0000012F 77               [ 8]  324 	ld	(hl), a
+    00000130 D1               [12]  325 	pop	de
+    00000131 D5               [16]  326 	push	de
+    00000132 7B               [ 4]  327 	ld	a, e
+    00000133 D6 0A            [ 8]  328 	sub	a, #0x0a
+    00000135 7A               [ 4]  329 	ld	a, d
+    00000136 DE 00            [ 8]  330 	sbc	a, #0x00
+    00000138 30 0D            [12]  331 	jr	NC, 00102$
+                                    332 ;src/scenes/game_scene/game_scene.c:98: set_bkg_tile_xy(19, 1, p->score);}
+    0000013A 2B               [ 8]  333 	dec	hl
+    0000013B 7E               [ 8]  334 	ld	a, (hl)
+    0000013C C5               [16]  335 	push	bc
+    0000013D F5               [16]  336 	push	af
+    0000013E 33               [ 8]  337 	inc	sp
+    0000013F 1E 01            [ 8]  338 	ld	e, #0x01
+    00000141 3E 13            [ 8]  339 	ld	a, #0x13
+    00000143 CDr00r00         [24]  340 	call	_set_bkg_tile_xy
+    00000146 C1               [12]  341 	pop	bc
+    00000147                        342 00102$:
+                                    343 ;src/scenes/game_scene/game_scene.c:100: if (p->level < 10){
+    00000147 59               [ 4]  344 	ld	e, c
+    00000148 50               [ 4]  345 	ld	d, b
+    00000149 13               [ 8]  346 	inc	de
+    0000014A 13               [ 8]  347 	inc	de
+    0000014B 1A               [ 8]  348 	ld	a, (de)
+    0000014C FE 0A            [ 8]  349 	cp	a, #0x0a
+    0000014E 30 0B            [12]  350 	jr	NC, 00104$
+                                    351 ;src/scenes/game_scene/game_scene.c:101: set_bkg_tile_xy(19, 2, p->level);}
+    00000150 C5               [16]  352 	push	bc
+    00000151 F5               [16]  353 	push	af
+    00000152 33               [ 8]  354 	inc	sp
+    00000153 1E 02            [ 8]  355 	ld	e, #0x02
+    00000155 3E 13            [ 8]  356 	ld	a, #0x13
+    00000157 CDr00r00         [24]  357 	call	_set_bkg_tile_xy
+    0000015A C1               [12]  358 	pop	bc
+    0000015B                        359 00104$:
+                                    360 ;src/scenes/game_scene/game_scene.c:103: if (p->lines <10){
+    0000015B 69               [ 4]  361 	ld	l, c
+    0000015C 60               [ 4]  362 	ld	h, b
+    0000015D 23               [ 8]  363 	inc	hl
+    0000015E 23               [ 8]  364 	inc	hl
+    0000015F 23               [ 8]  365 	inc	hl
+    00000160 2A               [ 8]  366 	ld	a, (hl+)
+    00000161 47               [ 4]  367 	ld	b, a
+    00000162 4E               [ 8]  368 	ld	c, (hl)
+    00000163 58               [ 4]  369 	ld	e, b
+    00000164 51               [ 4]  370 	ld	d, c
+    00000165 7B               [ 4]  371 	ld	a, e
+    00000166 D6 0A            [ 8]  372 	sub	a, #0x0a
+    00000168 7A               [ 4]  373 	ld	a, d
+    00000169 DE 00            [ 8]  374 	sbc	a, #0x00
+    0000016B 30 09            [12]  375 	jr	NC, 00106$
+                                    376 ;src/scenes/game_scene/game_scene.c:104: set_bkg_tile_xy(19, 3, p->lines);}
+    0000016D C5               [16]  377 	push	bc
+    0000016E 33               [ 8]  378 	inc	sp
+    0000016F 1E 03            [ 8]  379 	ld	e, #0x03
+    00000171 3E 13            [ 8]  380 	ld	a, #0x13
+    00000173 CDr00r00         [24]  381 	call	_set_bkg_tile_xy
+    00000176                        382 00106$:
+                                    383 ;src/scenes/game_scene/game_scene.c:106: if (collision_map[0] != 0){
+    00000176 FAr02r00         [16]  384 	ld	a, (#_collision_map + 0)
+    00000179 B7               [ 4]  385 	or	a, a
+    0000017A 28 0B            [12]  386 	jr	Z, 00109$
+                                    387 ;src/scenes/game_scene/game_scene.c:107: set_bkg_tile_xy(1, 0, 5);
+    0000017C 3E 05            [ 8]  388 	ld	a, #0x05
+    0000017E F5               [16]  389 	push	af
+    0000017F 33               [ 8]  390 	inc	sp
+    00000180 1E 00            [ 8]  391 	ld	e, #0x00
+    00000182 3E 01            [ 8]  392 	ld	a, #0x01
+    00000184 CDr00r00         [24]  393 	call	_set_bkg_tile_xy
+    00000187                        394 00109$:
+                                    395 ;src/scenes/game_scene/game_scene.c:110: }
+    00000187 33               [ 8]  396 	inc	sp
+    00000188 33               [ 8]  397 	inc	sp
+    00000189 C9               [16]  398 	ret
+                                    399 ;src/scenes/game_scene/game_scene.c:112: void DrawPiece(GameScene *p){
+                                    400 ;	---------------------------------
+                                    401 ; Function DrawPiece
+                                    402 ; ---------------------------------
+    0000018A                        403 _DrawPiece::
+    0000018A E8 F8            [16]  404 	add	sp, #-8
+    0000018C F8 06            [12]  405 	ldhl	sp,	#6
+    0000018E 7B               [ 4]  406 	ld	a, e
+    0000018F 22               [ 8]  407 	ld	(hl+), a
+                                    408 ;src/scenes/game_scene/game_scene.c:113: if(p->current_piece == 0){ // J piece
+    00000190 7A               [ 4]  409 	ld	a, d
+    00000191 32               [ 8]  410 	ld	(hl-), a
+    00000192 2A               [ 8]  411 	ld	a, (hl+)
+    00000193 5F               [ 4]  412 	ld	e, a
+    00000194 56               [ 8]  413 	ld	d, (hl)
+    00000195 21 05 00         [12]  414 	ld	hl, #0x0005
+    00000198 19               [ 8]  415 	add	hl, de
+    00000199 4D               [ 4]  416 	ld	c, l
+    0000019A 44               [ 4]  417 	ld	b, h
+    0000019B 0A               [ 8]  418 	ld	a, (bc)
+    0000019C F8 05            [12]  419 	ldhl	sp,	#5
+    0000019E 77               [ 8]  420 	ld	(hl), a
+    0000019F 7E               [ 8]  421 	ld	a, (hl)
+    000001A0 B7               [ 4]  422 	or	a, a
+    000001A1 C2r38r02         [16]  423 	jp	NZ, 00111$
+                                    424 ;c:\gbdk\include\gb\gb.h:1875: shadow_OAM[nb].tile=tile;
+    000001A4 21r02r00         [12]  425 	ld	hl, #(_shadow_OAM + 2)
+    000001A7 36 00            [12]  426 	ld	(hl), #0x00
+                                    427 ;src/scenes/game_scene/game_scene.c:117: move_sprite(0, p->piece_Xposition + SPRITE_X_OFFSET, p->piece_Yposition + SPRITE_Y_OFFSET);
+    000001A9 F8 06            [12]  428 	ldhl	sp,#6
+    000001AB 2A               [ 8]  429 	ld	a, (hl+)
+    000001AC 5F               [ 4]  430 	ld	e, a
+    000001AD 56               [ 8]  431 	ld	d, (hl)
+    000001AE 21 08 00         [12]  432 	ld	hl, #0x0008
+    000001B1 19               [ 8]  433 	add	hl, de
+    000001B2 33               [ 8]  434 	inc	sp
+    000001B3 33               [ 8]  435 	inc	sp
+    000001B4 5D               [ 4]  436 	ld	e, l
+    000001B5 54               [ 4]  437 	ld	d, h
+    000001B6 D5               [16]  438 	push	de
+    000001B7 1A               [ 8]  439 	ld	a, (de)
+    000001B8 F8 05            [12]  440 	ldhl	sp,	#5
+    000001BA 77               [ 8]  441 	ld	(hl), a
+    000001BB 7E               [ 8]  442 	ld	a, (hl)
+    000001BC C6 10            [ 8]  443 	add	a, #0x10
+    000001BE F8 02            [12]  444 	ldhl	sp,	#2
+    000001C0 77               [ 8]  445 	ld	(hl), a
+    000001C1 F8 06            [12]  446 	ldhl	sp,#6
+    000001C3 2A               [ 8]  447 	ld	a, (hl+)
+    000001C4 5F               [ 4]  448 	ld	e, a
+    000001C5 56               [ 8]  449 	ld	d, (hl)
+    000001C6 21 07 00         [12]  450 	ld	hl, #0x0007
+    000001C9 19               [ 8]  451 	add	hl, de
+    000001CA E5               [16]  452 	push	hl
+    000001CB 7D               [ 4]  453 	ld	a, l
+    000001CC F8 05            [12]  454 	ldhl	sp,	#5
+    000001CE 77               [ 8]  455 	ld	(hl), a
+    000001CF E1               [12]  456 	pop	hl
+    000001D0 7C               [ 4]  457 	ld	a, h
+    000001D1 F8 04            [12]  458 	ldhl	sp,	#4
+    000001D3 32               [ 8]  459 	ld	(hl-), a
+    000001D4 2A               [ 8]  460 	ld	a, (hl+)
+    000001D5 5F               [ 4]  461 	ld	e, a
+    000001D6 2A               [ 8]  462 	ld	a, (hl+)
+    000001D7 57               [ 4]  463 	ld	d, a
+    000001D8 1A               [ 8]  464 	ld	a, (de)
+    000001D9 77               [ 8]  465 	ld	(hl), a
+    000001DA 7E               [ 8]  466 	ld	a, (hl)
+    000001DB C6 08            [ 8]  467 	add	a, #0x08
+    000001DD 77               [ 8]  468 	ld	(hl), a
+                                    469 ;c:\gbdk\include\gb\gb.h:1961: OAM_item_t * itm = &shadow_OAM[nb];
+    000001DE 01r00r00         [12]  470 	ld	bc, #_shadow_OAM
+                                    471 ;c:\gbdk\include\gb\gb.h:1962: itm->y=y, itm->x=x;
+    000001E1 F8 02            [12]  472 	ldhl	sp,	#2
+    000001E3 7E               [ 8]  473 	ld	a, (hl)
+    000001E4 02               [ 8]  474 	ld	(bc), a
+    000001E5 03               [ 8]  475 	inc	bc
+    000001E6 F8 05            [12]  476 	ldhl	sp,	#5
+    000001E8 7E               [ 8]  477 	ld	a, (hl)
+    000001E9 02               [ 8]  478 	ld	(bc), a
+                                    479 ;c:\gbdk\include\gb\gb.h:1875: shadow_OAM[nb].tile=tile;
+    000001EA 21r06r00         [12]  480 	ld	hl, #(_shadow_OAM + 6)
+    000001ED 36 00            [12]  481 	ld	(hl), #0x00
+                                    482 ;src/scenes/game_scene/game_scene.c:120: move_sprite(1, p->piece_Xposition + SPRITE_X_OFFSET, p->piece_Yposition + SPRITE_Y_OFFSET + 8);
+    000001EF D1               [12]  483 	pop	de
+    000001F0 D5               [16]  484 	push	de
+    000001F1 1A               [ 8]  485 	ld	a, (de)
+    000001F2 C6 18            [ 8]  486 	add	a, #0x18
+    000001F4 47               [ 4]  487 	ld	b, a
+    000001F5 F8 03            [12]  488 	ldhl	sp,#3
+    000001F7 2A               [ 8]  489 	ld	a, (hl+)
+    000001F8 5F               [ 4]  490 	ld	e, a
+    000001F9 56               [ 8]  491 	ld	d, (hl)
+    000001FA 1A               [ 8]  492 	ld	a, (de)
+    000001FB C6 08            [ 8]  493 	add	a, #0x08
+    000001FD 4F               [ 4]  494 	ld	c, a
+                                    495 ;c:\gbdk\include\gb\gb.h:1961: OAM_item_t * itm = &shadow_OAM[nb];
+    000001FE 21r04r00         [12]  496 	ld	hl, #(_shadow_OAM + 4)
+                                    497 ;c:\gbdk\include\gb\gb.h:1962: itm->y=y, itm->x=x;
+    00000201 78               [ 4]  498 	ld	a, b
+    00000202 22               [ 8]  499 	ld	(hl+), a
+    00000203 71               [ 8]  500 	ld	(hl), c
+                                    501 ;c:\gbdk\include\gb\gb.h:1875: shadow_OAM[nb].tile=tile;
+    00000204 21r0Ar00         [12]  502 	ld	hl, #(_shadow_OAM + 10)
+    00000207 36 00            [12]  503 	ld	(hl), #0x00
+                                    504 ;src/scenes/game_scene/game_scene.c:123: move_sprite(2, p->piece_Xposition + SPRITE_X_OFFSET + 8, p->piece_Yposition + SPRITE_Y_OFFSET + 8);
+    00000209 D1               [12]  505 	pop	de
+    0000020A D5               [16]  506 	push	de
+    0000020B 1A               [ 8]  507 	ld	a, (de)
+    0000020C C6 18            [ 8]  508 	add	a, #0x18
+    0000020E 47               [ 4]  509 	ld	b, a
+    0000020F F8 03            [12]  510 	ldhl	sp,#3
+    00000211 2A               [ 8]  511 	ld	a, (hl+)
+    00000212 5F               [ 4]  512 	ld	e, a
+    00000213 56               [ 8]  513 	ld	d, (hl)
+    00000214 1A               [ 8]  514 	ld	a, (de)
+    00000215 C6 10            [ 8]  515 	add	a, #0x10
+    00000217 4F               [ 4]  516 	ld	c, a
+                                    517 ;c:\gbdk\include\gb\gb.h:1961: OAM_item_t * itm = &shadow_OAM[nb];
+    00000218 21r08r00         [12]  518 	ld	hl, #(_shadow_OAM + 8)
+                                    519 ;c:\gbdk\include\gb\gb.h:1962: itm->y=y, itm->x=x;
+    0000021B 78               [ 4]  520 	ld	a, b
+    0000021C 22               [ 8]  521 	ld	(hl+), a
+    0000021D 71               [ 8]  522 	ld	(hl), c
+                                    523 ;c:\gbdk\include\gb\gb.h:1875: shadow_OAM[nb].tile=tile;
+    0000021E 21r0Er00         [12]  524 	ld	hl, #(_shadow_OAM + 14)
+    00000221 36 00            [12]  525 	ld	(hl), #0x00
+                                    526 ;src/scenes/game_scene/game_scene.c:126: move_sprite(3, p->piece_Xposition + SPRITE_X_OFFSET + 16, p->piece_Yposition + SPRITE_Y_OFFSET + 8);
+    00000223 D1               [12]  527 	pop	de
+    00000224 D5               [16]  528 	push	de
+    00000225 1A               [ 8]  529 	ld	a, (de)
+    00000226 C6 18            [ 8]  530 	add	a, #0x18
+    00000228 47               [ 4]  531 	ld	b, a
+    00000229 F8 03            [12]  532 	ldhl	sp,#3
+    0000022B 2A               [ 8]  533 	ld	a, (hl+)
+    0000022C 5F               [ 4]  534 	ld	e, a
+    0000022D 56               [ 8]  535 	ld	d, (hl)
+    0000022E 1A               [ 8]  536 	ld	a, (de)
+    0000022F C6 18            [ 8]  537 	add	a, #0x18
+    00000231 4F               [ 4]  538 	ld	c, a
+                                    539 ;c:\gbdk\include\gb\gb.h:1961: OAM_item_t * itm = &shadow_OAM[nb];
+    00000232 21r0Cr00         [12]  540 	ld	hl, #(_shadow_OAM + 12)
+                                    541 ;c:\gbdk\include\gb\gb.h:1962: itm->y=y, itm->x=x;
+    00000235 78               [ 4]  542 	ld	a, b
+    00000236 22               [ 8]  543 	ld	(hl+), a
+    00000237 71               [ 8]  544 	ld	(hl), c
+                                    545 ;src/scenes/game_scene/game_scene.c:126: move_sprite(3, p->piece_Xposition + SPRITE_X_OFFSET + 16, p->piece_Yposition + SPRITE_Y_OFFSET + 8);
+    00000238                        546 00111$:
+                                    547 ;src/scenes/game_scene/game_scene.c:128: }
+    00000238 E8 08            [16]  548 	add	sp, #8
+    0000023A C9               [16]  549 	ret
+                                    550 	.area _CODE
+                                    551 	.area _INITIALIZER
+                                    552 	.area _CABS (ABS)

@@ -1,0 +1,127 @@
+                                      1 ;--------------------------------------------------------
+                                      2 ; File Created by SDCC : free open source ISO C Compiler 
+                                      3 ; Version 4.4.1 #14650 (MINGW64)
+                                      4 ;--------------------------------------------------------
+                                      5 	.module main
+                                      6 	.optsdcc -msm83
+                                      7 	
+                                      8 ;--------------------------------------------------------
+                                      9 ; Public variables in this module
+                                     10 ;--------------------------------------------------------
+                                     11 	.globl _main
+                                     12 	.globl _DrawPiece
+                                     13 	.globl _DrawUI
+                                     14 	.globl _UpdateGameScene
+                                     15 	.globl _InitGameScene
+                                     16 	.globl _InputRead
+                                     17 	.globl _InputJustPressed
+                                     18 	.globl _vsync
+                                     19 	.globl _scn_game
+                                     20 ;--------------------------------------------------------
+                                     21 ; special function registers
+                                     22 ;--------------------------------------------------------
+                                     23 ;--------------------------------------------------------
+                                     24 ; ram data
+                                     25 ;--------------------------------------------------------
+                                     26 	.area _DATA
+    00000000                         27 _scn_game::
+    00000000                         28 	.ds 9
+                                     29 ;--------------------------------------------------------
+                                     30 ; ram data
+                                     31 ;--------------------------------------------------------
+                                     32 	.area _INITIALIZED
+                                     33 ;--------------------------------------------------------
+                                     34 ; absolute external ram data
+                                     35 ;--------------------------------------------------------
+                                     36 	.area _DABS (ABS)
+                                     37 ;--------------------------------------------------------
+                                     38 ; global & static initialisations
+                                     39 ;--------------------------------------------------------
+                                     40 	.area _HOME
+                                     41 	.area _GSINIT
+                                     42 	.area _GSFINAL
+                                     43 	.area _GSINIT
+                                     44 ;--------------------------------------------------------
+                                     45 ; Home
+                                     46 ;--------------------------------------------------------
+                                     47 	.area _HOME
+                                     48 	.area _HOME
+                                     49 ;--------------------------------------------------------
+                                     50 ; code
+                                     51 ;--------------------------------------------------------
+                                     52 	.area _CODE
+                                     53 ;src/main.c:14: void main(void){
+                                     54 ;	---------------------------------
+                                     55 ; Function main
+                                     56 ; ---------------------------------
+    00000000                         57 _main::
+                                     58 ;src/main.c:16: NR52_REG = 0x80; // Master sound on
+    00000000 3E 80            [ 8]   59 	ld	a, #0x80
+    00000002 E0r00            [12]   60 	ldh	(_NR52_REG + 0), a
+                                     61 ;src/main.c:17: NR50_REG = 0xFF; // Maximum volume for left/right speakers
+    00000004 3E FF            [ 8]   62 	ld	a, #0xff
+    00000006 E0r00            [12]   63 	ldh	(_NR50_REG + 0), a
+                                     64 ;src/main.c:18: NR51_REG = 0xFF; // Turn on sound fully
+    00000008 3E FF            [ 8]   65 	ld	a, #0xff
+    0000000A E0r00            [12]   66 	ldh	(_NR51_REG + 0), a
+                                     67 ;src/main.c:20: current_game_state = 0;
+    0000000C 21r00r00         [12]   68 	ld	hl, #_current_game_state
+    0000000F 36 00            [12]   69 	ld	(hl), #0x00
+                                     70 ;src/main.c:22: InitGameScene(&scn_game);
+    00000011 11r00r00         [12]   71 	ld	de, #_scn_game
+    00000014 CDr00r00         [24]   72 	call	_InitGameScene
+                                     73 ;src/main.c:24: SHOW_BKG;
+    00000017 F0r00            [12]   74 	ldh	a, (_LCDC_REG + 0)
+    00000019 F6 01            [ 8]   75 	or	a, #0x01
+    0000001B E0r00            [12]   76 	ldh	(_LCDC_REG + 0), a
+                                     77 ;src/main.c:25: SHOW_SPRITES;
+    0000001D F0r00            [12]   78 	ldh	a, (_LCDC_REG + 0)
+    0000001F F6 02            [ 8]   79 	or	a, #0x02
+    00000021 E0r00            [12]   80 	ldh	(_LCDC_REG + 0), a
+                                     81 ;src/main.c:26: DISPLAY_ON;
+    00000023 F0r00            [12]   82 	ldh	a, (_LCDC_REG + 0)
+    00000025 F6 80            [ 8]   83 	or	a, #0x80
+    00000027 E0r00            [12]   84 	ldh	(_LCDC_REG + 0), a
+                                     85 ;src/main.c:29: while(1) {
+    00000029                         86 00110$:
+                                     87 ;src/main.c:31: if(current_game_state != 1){
+    00000029 FAr00r00         [16]   88 	ld	a, (#_current_game_state)
+    0000002C 3D               [ 4]   89 	dec	a
+    0000002D 28 0D            [12]   90 	jr	Z, 00104$
+                                     91 ;src/main.c:32: if (InputJustPressed(J_START)){
+    0000002F 3E 80            [ 8]   92 	ld	a, #0x80
+    00000031 CDr00r00         [24]   93 	call	_InputJustPressed
+    00000034 B7               [ 4]   94 	or	a, a
+    00000035 28 05            [12]   95 	jr	Z, 00104$
+                                     96 ;src/main.c:33: current_game_state = 1;
+    00000037 21r00r00         [12]   97 	ld	hl, #_current_game_state
+    0000003A 36 01            [12]   98 	ld	(hl), #0x01
+    0000003C                         99 00104$:
+                                    100 ;src/main.c:37: if(current_game_state == 1){
+    0000003C FAr00r00         [16]  101 	ld	a, (#_current_game_state)
+    0000003F 3D               [ 4]  102 	dec	a
+    00000040 20 06            [12]  103 	jr	NZ, 00106$
+                                    104 ;src/main.c:38: UpdateGameScene(&scn_game);
+    00000042 11r00r00         [12]  105 	ld	de, #_scn_game
+    00000045 CDr00r00         [24]  106 	call	_UpdateGameScene
+    00000048                        107 00106$:
+                                    108 ;src/main.c:41: vsync(); // Vblank
+    00000048 CDr00r00         [24]  109 	call	_vsync
+                                    110 ;src/main.c:43: if(current_game_state == 1){
+    0000004B FAr00r00         [16]  111 	ld	a, (#_current_game_state)
+    0000004E 3D               [ 4]  112 	dec	a
+    0000004F 20 0C            [12]  113 	jr	NZ, 00108$
+                                    114 ;src/main.c:44: DrawUI(&scn_game);
+    00000051 11r00r00         [12]  115 	ld	de, #_scn_game
+    00000054 CDr00r00         [24]  116 	call	_DrawUI
+                                    117 ;src/main.c:45: DrawPiece(&scn_game);
+    00000057 11r00r00         [12]  118 	ld	de, #_scn_game
+    0000005A CDr00r00         [24]  119 	call	_DrawPiece
+    0000005D                        120 00108$:
+                                    121 ;src/main.c:48: InputRead();
+    0000005D CDr00r00         [24]  122 	call	_InputRead
+                                    123 ;src/main.c:52: }
+    00000060 18 C7            [12]  124 	jr	00110$
+                                    125 	.area _CODE
+                                    126 	.area _INITIALIZER
+                                    127 	.area _CABS (ABS)
